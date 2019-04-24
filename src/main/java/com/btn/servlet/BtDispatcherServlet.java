@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author hdonghong
- * dh-springmvc的前端控制器
+ * @author zj chen <britton@126.com>
+ * spring-mvc的前端控制器
  */
 //@WebServlet("/*")
 public class BtDispatcherServlet extends HttpServlet {
@@ -108,7 +108,6 @@ public class BtDispatcherServlet extends HttpServlet {
         // 调用方法需要传递的形参
         Object paramValues[] = new Object[methodParameters.length];
         for (int i = 0; i < methodParameters.length; i++) {
-
             if (ServletRequest.class.isAssignableFrom(methodParameters[i].getType())) {
                 paramValues[i] = req;
             } else if (ServletResponse.class.isAssignableFrom(methodParameters[i].getType())) {
@@ -154,20 +153,19 @@ public class BtDispatcherServlet extends HttpServlet {
             Class<?> aClass = entry.getValue().getClass();
             // 通过实例区分Controller层对象
             if (aClass.isAnnotationPresent(BtController.class)) {
-                // 实现注解映射请求路径，允许当controller类没有使用@DhRequestMapping注解时，
-                // 可使用@DhController注解的value作为请求路径
-                String classURI = "";
+                // 实现注解映射请求路径，允许当controller类没有使用@BrRequestMapping注解时，
+                // 可使用@BrController注解的value作为请求路径
+                String classURI;
                 if (aClass.isAnnotationPresent(BtRequestMapping.class)) {
                     classURI = aClass.getAnnotation(BtRequestMapping.class).value();
                 } else {
                     classURI = aClass.getAnnotation(BtController.class).value();
                 }
-                // 遍历controller类中每个使用@DhRquestMapping的方法，细化请求路径
+                // 遍历controller类中每个使用@BrRquestMapping的方法，细化请求路径
                 Method[] methods = aClass.getMethods();
                 for (Method method : methods) {
                     if (method.isAnnotationPresent(BtRequestMapping.class)) {
                         String methodURI = method.getAnnotation(BtRequestMapping.class).value();
-
                         // 存入handlerMaps
                         String url = ("/" + classURI + "/" + methodURI).replaceAll("/+", "/");
                         handlerMaps.put(url, method);
@@ -195,7 +193,7 @@ public class BtDispatcherServlet extends HttpServlet {
                 if (field.isAnnotationPresent(BtQualifier.class)) {
                     // 通过bean字段对象上面的注解参数来注入实例
                     String insMapKey = field.getAnnotation(BtQualifier.class).value();
-                    if (insMapKey.equals("")) {// 如果使用@DhController，@DhService没有配置value的值，默认使用类名 首字母小写
+                    if (insMapKey.equals("")) {// 如果使用@BrController，@BrService没有配置value的值，默认使用类名 首字母小写
                         insMapKey = CommonUtils.toLowerFirstWord(field.getType().getSimpleName());
                     }
                     field.setAccessible(true);
@@ -221,7 +219,7 @@ public class BtDispatcherServlet extends HttpServlet {
                 // 进一步对这个控制层实例对象打标签，维护到缓存中
                 BtController controllerAnnotation = aClass.getAnnotation(BtController.class);
                 String insMapKey = controllerAnnotation.value();
-                if ("".equals(insMapKey)) {// 如果使用@DhController，@DhService没有配置value的值，默认使用类名 首字母小写
+                if ("".equals(insMapKey)) {// 如果使用@BrController，@BrService没有配置value的值，默认使用类名 首字母小写
                     insMapKey = CommonUtils.toLowerFirstWord(aClass.getSimpleName());
                 }
                 instanceMaps.put(insMapKey, controllerInstance);
@@ -230,7 +228,7 @@ public class BtDispatcherServlet extends HttpServlet {
                 // 进一步对这个业务层实例对象打标签，维护到缓存中
                 BtService serviceAnnotation = aClass.getAnnotation(BtService.class);
                 String insMapKey = serviceAnnotation.value();
-                if ("".equals(insMapKey)) {// 如果使用@DhController，@DhService没有配置value的值，默认使用类名 首字母小写
+                if ("".equals(insMapKey)) {// 如果使用@BrController，@BrService没有配置value的值，默认使用类名 首字母小写
                     insMapKey = CommonUtils.toLowerFirstWord(aClass.getSimpleName());
                 }
                 instanceMaps.put(insMapKey, serviceInstance);
@@ -255,7 +253,7 @@ public class BtDispatcherServlet extends HttpServlet {
                 // 遇到目录递归读取文件
                 scanPack(basePackName + "." + file.getName());
             } else if (file.isFile()) {
-                // 将形如pers.hdh.controller.Xxx的类限定名字符串加入beanNames中
+                // 将形如com.btn.controllers.Xxx的类限定名字符串加入beanNames中
                 beanNames.add(basePackName + "." + file.getName().replace(".class", ""));
                 System.out.println("扫描到的类有：" + basePackName + "." + file.getName().replace(".class", ""));
             }

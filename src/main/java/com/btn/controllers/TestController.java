@@ -16,12 +16,14 @@ import java.io.IOException;
 public class TestController {
     @BtQualifier("testService")
     private TestService testService;
+
     // 测试@BrService使用默认值
     @BtQualifier("testService2Impl")
     private TestService2 testService2;
 
     /**
-     * 测试的url：http://localhost:8080/dh-springmvc/test/1?str_param=233&int_param=2&float_param=1.2&double_param=2.5
+     * 测试的url：http://localhost:8080/spring-mvc/test/1?str_param=233&int_param=2&float_param=1.2&double_param=2.5
+     *
      * @param request
      * @param response
      * @param strParam
@@ -40,9 +42,9 @@ public class TestController {
         try {
             response.getWriter().write(
                     "String parameter: " + strParam +
-                      "\nInteger parameter: " + intParam +
-                      "\nFloat parameter: " + floatParam +
-                      "\nDouble parameter: " + doubleParam);
+                            "\nInteger parameter: " + intParam +
+                            "\nFloat parameter: " + floatParam +
+                            "\nDouble parameter: " + doubleParam);
         } catch (IOException e) {
             e.printStackTrace();
         }

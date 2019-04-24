@@ -15,7 +15,7 @@ import java.io.InputStream;
 public class CommonUtils {
 
     /**
-     * 解析dh-springmvc的配置文件，获取扫描的基本包名
+     * 解析spring-mvc的配置文件，获取扫描的基本包名
      *
      * @param contextConfigLocation
      * @return
@@ -27,29 +27,27 @@ public class CommonUtils {
         DocumentBuilder builder = factory.newDocumentBuilder();
         InputStream in = CommonUtils.class.getClassLoader().getResourceAsStream(contextConfigLocation);
         Document doc = builder.parse(in);
-
         // 开始解析
         Element root = doc.getDocumentElement();
-//        System.out.println(root.getTagName());// beans
+        //System.out.println(root.getTagName());// beans
         NodeList childNodes = root.getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {
             Node child = childNodes.item(i);
             if (child instanceof Element) {
                 Element element = (Element) child;
-//                System.out.println(element.getTagName());// context:component-scan
+                //System.out.println(element.getTagName());// context:component-scan
                 String attribute = element.getAttribute("base-package");
-//                System.out.println(attribute);// pers.hdh
+                //System.out.println(attribute);// com.btn
                 if (attribute != null || "".equals(attribute.trim())) {
                     return attribute.trim();
                 }
             }
         }
-
         return null;
     }
 
     /**
-     * 将限定名转换为路径，如pers.hdh -> pers/hdh
+     * 将限定名转换为路径，com.btn -> com/btn
      *
      * @param qualifiedName
      * @return
@@ -74,6 +72,6 @@ public class CommonUtils {
     }
 
     public static void main(String[] args) throws Exception {
-        System.out.println(getBasePackName("springmvc.xml"));
+        System.out.println(getBasePackName("spring-mvc.xml"));
     }
 }
